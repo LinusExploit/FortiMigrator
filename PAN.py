@@ -8,10 +8,10 @@ mapped_interfaces = {'forti-int1': 'pan-int1', 'forti-int2': 'pan-int2', 'forti-
 
 # a dictionary of fortinet vpn ip addresses and their masks.
 mapped_ips = {
-    '91.195.89.160':'/24',
-    '37.224.33.37':'/31',
-    '86.51.150.46':'/30',
-    '91.195.88.134':'/32',
+    'ip1':'mask1',
+    'ip2':'mask2',
+    'ip3':'mask3',
+    'ip4':'mask4',
 
 }
 
