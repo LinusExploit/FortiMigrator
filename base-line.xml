@@ -1,0 +1,438 @@
+<?xml version="1.0"?>
+<config version="10.0.0" urldb="paloaltonetworks">
+  <devices>
+    <entry name="localhost.localdomain">
+      <deviceconfig>
+        <system>
+          <hostname>NGFW-HOME-1</hostname>
+          <domain>home.net</domain>
+          <ip-address>192.168.1.245</ip-address>
+          <netmask>255.255.255.0</netmask>
+          <default-gateway>192.168.1.1</default-gateway>
+          <service>
+            <disable-userid-service>no</disable-userid-service>
+          </service>
+        </system>
+        <setting>
+          <management>
+            <disable-predefined-reports/>
+          </management>
+          <auto-mac-detect>yes</auto-mac-detect>
+          <session>
+            <packet-buffer-protection-latency-alert>50</packet-buffer-protection-latency-alert>
+            <packet-buffer-protection-latency-activate>200</packet-buffer-protection-latency-activate>
+            <packet-buffer-protection-latency-max-tolerate>500</packet-buffer-protection-latency-max-tolerate>
+            <packet-buffer-protection-latency-block-countdown>500</packet-buffer-protection-latency-block-countdown>
+          </session>
+          <jumbo-frame>
+            <mtu>9192</mtu>
+          </jumbo-frame>
+        </setting>
+        <high-availability>
+          <interface>
+            <ha1/>
+            <ha1-backup/>
+            <ha2>
+              <port>ethernet1/4</port>
+              <ip-address>1.1.1.1</ip-address>
+              <netmask>255.255.255.252</netmask>
+            </ha2>
+          </interface>
+          <group>
+            <group-id>1</group-id>
+            <description>HA local configuration</description>
+            <mode>
+              <active-passive>
+                <passive-link-state>auto</passive-link-state>
+              </active-passive>
+            </mode>
+            <state-synchronization>
+              <transport>ip</transport>
+            </state-synchronization>
+            <peer-ip>192.168.1.246</peer-ip>
+          </group>
+          <enabled>yes</enabled>
+        </high-availability>
+      </deviceconfig>
+      <network>
+        <virtual-router>
+          <entry name="VR1">
+            <ecmp>
+              <algorithm>
+                <ip-modulo/>
+              </algorithm>
+            </ecmp>
+            <protocol>
+              <bgp>
+                <routing-options>
+                  <graceful-restart>
+                    <enable>yes</enable>
+                  </graceful-restart>
+                </routing-options>
+                <enable>no</enable>
+              </bgp>
+              <rip>
+                <enable>no</enable>
+              </rip>
+              <ospf>
+                <enable>no</enable>
+              </ospf>
+              <ospfv3>
+                <enable>no</enable>
+              </ospfv3>
+            </protocol>
+            <interface>
+              <member>ethernet1/2</member>
+              <member>ethernet1/3</member>
+              <member>tunnel</member>
+              <member>ethernet1/1</member>
+            </interface>
+            <routing-table>
+              <ip>
+                <static-route>
+                  <entry name="Default-Route-Internet">
+                    <nexthop>
+                      <ip-address>192.168.1.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>0.0.0.0/0</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                </static-route>
+              </ip>
+            </routing-table>
+          </entry>
+          <entry name="main-vr">
+            <ecmp>
+              <algorithm>
+                <ip-modulo/>
+              </algorithm>
+            </ecmp>
+            <protocol>
+              <bgp>
+                <routing-options>
+                  <graceful-restart>
+                    <enable>yes</enable>
+                  </graceful-restart>
+                </routing-options>
+                <enable>no</enable>
+              </bgp>
+              <rip>
+                <enable>no</enable>
+              </rip>
+              <ospf>
+                <enable>no</enable>
+              </ospf>
+              <ospfv3>
+                <enable>no</enable>
+              </ospfv3>
+            </protocol>
+            <interface>
+              <member>tunnel.1</member>
+            </interface>
+          </entry>
+        </virtual-router>
+        <interface>
+          <ethernet>
+            <entry name="ethernet1/6">
+              <link-state>up</link-state>
+            </entry>
+            <entry name="ethernet1/2">
+              <layer3>
+                <ndp-proxy>
+                  <enabled>no</enabled>
+                </ndp-proxy>
+                <sdwan-link-settings>
+                  <upstream-nat>
+                    <enable>no</enable>
+                    <static-ip/>
+                  </upstream-nat>
+                  <enable>no</enable>
+                </sdwan-link-settings>
+                <ip>
+                  <entry name="192.168.1.70/24"/>
+                </ip>
+                <lldp>
+                  <enable>no</enable>
+                </lldp>
+              </layer3>
+              <comment>Outside Interface connecting to WAN Edge Router </comment>
+              <link-state>down</link-state>
+            </entry>
+          </ethernet>
+          <tunnel>
+            <units>
+              <entry name="tunnel.1">
+                <comment>Tunnel Interface for VPN</comment>
+              </entry>
+            </units>
+          </tunnel>
+        </interface>
+        <profiles>
+          <interface-management-profile/>
+          <monitor-profile/>
+        </profiles>
+        <ike>
+          <crypto-profiles>
+            <ike-crypto-profiles>
+              <entry name="IKE_PROFILE_TEST">
+                <hash>
+                  <member>sha1</member>
+                </hash>
+                <dh-group>
+                  <member>group5</member>
+                </dh-group>
+                <encryption>
+                  <member>aes-192-cbc</member>
+                  <member>des</member>
+                </encryption>
+                <lifetime>
+                  <hours>8</hours>
+                </lifetime>
+              </entry>
+            </ike-crypto-profiles>
+            <ipsec-crypto-profiles>
+              <entry name="IPSEC_PROFILE_TEST">
+                <esp>
+                  <authentication>
+                    <member>sha256</member>
+                  </authentication>
+                  <encryption>
+                    <member>aes-128-cbc</member>
+                  </encryption>
+                </esp>
+                <lifetime>
+                  <hours>1</hours>
+                </lifetime>
+                <dh-group>group2</dh-group>
+              </entry>
+            </ipsec-crypto-profiles>
+            <global-protect-app-crypto-profiles/>
+          </crypto-profiles>
+          <gateway>
+            <entry name="IKE_GW">
+              <authentication>
+                <pre-shared-key>
+                  <key>-AQ==jyY9uenm5yWYZigds5nhb6wxK7s=hDPXDC+F5X5RCnfbo62VTA==</key>
+                </pre-shared-key>
+              </authentication>
+              <protocol>
+                <ikev1>
+                  <dpd>
+                    <enable>yes</enable>
+                  </dpd>
+                  <ike-crypto-profile>IKE_PROFILE_TEST</ike-crypto-profile>
+                </ikev1>
+                <ikev2>
+                  <dpd>
+                    <enable>yes</enable>
+                  </dpd>
+                  <ike-crypto-profile>IKE_PROFILE_TEST</ike-crypto-profile>
+                </ikev2>
+                <version>ikev2</version>
+              </protocol>
+              <local-address>
+                <ip>192.168.1.70/24</ip>
+                <interface>ethernet1/2</interface>
+              </local-address>
+              <protocol-common>
+                <nat-traversal>
+                  <enable>yes</enable>
+                </nat-traversal>
+                <fragmentation>
+                  <enable>no</enable>
+                </fragmentation>
+                <passive-mode>yes</passive-mode>
+              </protocol-common>
+              <peer-address>
+                <ip>1.1.1.1</ip>
+              </peer-address>
+              <comment>Test IKE Profile</comment>
+            </entry>
+          </gateway>
+        </ike>
+        <qos>
+          <profile/>
+        </qos>
+        <tunnel>
+          <ipsec>
+            <entry name="IPSEC_Tunnel_TEST">
+              <auto-key>
+                <ike-gateway>
+                  <entry name="IKE_GW"/>
+                </ike-gateway>
+                <proxy-id>
+                  <entry name="ID1">
+                    <protocol>
+                      <any/>
+                    </protocol>
+                    <local>10.0.0.0/24</local>
+                    <remote>11.0.0.0/24</remote>
+                  </entry>
+                  <entry name="proxyid2">
+                    <protocol>
+                      <any/>
+                    </protocol>
+                    <local>12.0.0.1/32</local>
+                    <remote>15.0.0.0/32</remote>
+                  </entry>
+                </proxy-id>
+                <ipsec-crypto-profile>IPSEC_PROFILE_TEST</ipsec-crypto-profile>
+              </auto-key>
+              <tunnel-monitor>
+                <enable>no</enable>
+              </tunnel-monitor>
+              <tunnel-interface>tunnel.1</tunnel-interface>
+            </entry>
+          </ipsec>
+          <global-protect-gateway/>
+          <global-protect-site-to-site/>
+        </tunnel>
+      </network>
+      <vsys>
+        <entry name="vsys1">
+          <zone>
+            <entry name="INSIDE">
+              <network>
+                <layer3>
+                  <member>ethernet1/1</member>
+                </layer3>
+              </network>
+            </entry>
+          </zone>
+          <import>
+            <network>
+              <interface>
+                <member>tunnel.1</member>
+              </interface>
+              <virtual-router/>
+            </network>
+          </import>
+          <address>
+            <entry name="mapped-1">
+              <ip-netmask>192.168.1.54</ip-netmask>
+            </entry>
+          </address>
+          <rulebase>
+            <nat>
+              <rules/>
+            </nat>
+          </rulebase>
+        </entry>
+      </vsys>
+    </entry>
+  </devices>
+  <mgt-config>
+    <users>
+      <entry name="admin">
+        <phash>$1$kagsgakq$VMQ1pS2LDS3OLDl1tuofV1</phash>
+        <permissions>
+          <role-based>
+            <superuser>yes</superuser>
+          </role-based>
+        </permissions>
+      </entry>
+    </users>
+  </mgt-config>
+  <shared>
+    <admin-role/>
+    <certificate/>
+    <ssl-decrypt>
+      <trusted-root-CA/>
+      <ssl-exclude-cert/>
+    </ssl-decrypt>
+    <certificate-profile/>
+    <botnet>
+      <configuration>
+        <http>
+          <dynamic-dns>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </dynamic-dns>
+          <malware-sites>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </malware-sites>
+          <recent-domains>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </recent-domains>
+          <ip-domains>
+            <enabled>yes</enabled>
+            <threshold>10</threshold>
+          </ip-domains>
+          <executables-from-unknown-sites>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </executables-from-unknown-sites>
+        </http>
+        <other-applications>
+          <irc>yes</irc>
+        </other-applications>
+        <unknown-applications>
+          <unknown-tcp>
+            <destinations-per-hour>10</destinations-per-hour>
+            <sessions-per-hour>10</sessions-per-hour>
+            <session-length>
+              <maximum-bytes>100</maximum-bytes>
+              <minimum-bytes>50</minimum-bytes>
+            </session-length>
+          </unknown-tcp>
+          <unknown-udp>
+            <destinations-per-hour>10</destinations-per-hour>
+            <sessions-per-hour>10</sessions-per-hour>
+            <session-length>
+              <maximum-bytes>100</maximum-bytes>
+              <minimum-bytes>50</minimum-bytes>
+            </session-length>
+          </unknown-udp>
+        </unknown-applications>
+      </configuration>
+      <report>
+        <topn>100</topn>
+        <scheduled>yes</scheduled>
+      </report>
+    </botnet>
+    <ssl-tls-service-profile/>
+    <application-status>
+      <entry name="calendly" status="disabled"/>
+      <entry name="gitbook-downloading" status="disabled"/>
+      <entry name="gitbook-uploading" status="disabled"/>
+      <entry name="keynote-base" status="disabled"/>
+      <entry name="keynote-uploading" status="disabled"/>
+      <entry name="microsoft-intune" status="disabled"/>
+      <entry name="pages-base" status="disabled"/>
+      <entry name="pages-uploading" status="disabled"/>
+      <entry name="powtoon-uploading" status="disabled"/>
+      <entry name="rapid7-insight-idr" status="disabled"/>
+      <entry name="siemens-epoc" status="disabled"/>
+      <entry name="stryker-or-hub-heartbeat" status="disabled"/>
+      <entry name="wasabi" status="disabled"/>
+      <entry name="silex-webserver" status="disabled"/>
+      <entry name="stryker-axeda-gateway" status="disabled"/>
+      <entry name="visme-base" status="disabled"/>
+      <entry name="visme-uploading" status="disabled"/>
+      <entry name="awesun" status="disabled"/>
+      <entry name="hikvision-http" status="disabled"/>
+      <entry name="notion-base" status="disabled"/>
+      <entry name="notion-delete" status="disabled"/>
+      <entry name="notion-download" status="disabled"/>
+      <entry name="notion-logout" status="disabled"/>
+      <entry name="notion-upload" status="disabled"/>
+      <entry name="google-photos-downloading" status="disabled"/>
+      <entry name="google-photos-sharing" status="disabled"/>
+      <entry name="google-photos-uploading" status="disabled"/>
+      <entry name="packer" status="disabled"/>
+      <entry name="paloalto-aurl-idl" status="disabled"/>
+      <entry name="paramount-plus" status="disabled"/>
+      <entry name="tresorit-downloading" status="disabled"/>
+      <entry name="tresorit-uploading" status="disabled"/>
+    </application-status>
+  </shared>
+</config>
